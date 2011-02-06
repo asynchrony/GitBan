@@ -12,8 +12,6 @@ MSG='This is a test message'
 # suite tests
 #
 
-
-test_FindNewBranches_WhenPassedFetchData_ReturnsNewBranches() {
 	msg_from_fetch=$(cat <<- EOF
  remote: Counting objects: 4006, done.
 remote: Compressing objects: 100% (1322/1322), done.
@@ -28,6 +26,8 @@ From github.com:schacon/hw
  * [new branch]      lisp       -> github/lisp
 EOF
 )
+
+test_FindNewBranches_WhenPassedFetchData_ReturnsNewBranches() {
 	branches=(`findNewBranches "$msg_from_fetch"`)
 	assertSame 'Should be ada but was ${branches[0]}' "${branches[0]}" 'ada'
 	assertSame 'Should be lisp but was ${branches[1]}' "${branches[1]}" 'lisp'
