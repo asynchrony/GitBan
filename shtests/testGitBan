@@ -28,7 +28,14 @@ From github.com:schacon/hw
  * [new branch]      lisp       -> github/lisp
 EOF
 )
-	echo "$msg_from_fetch"
+	msg_from_grep="`echo "$msg_from_fetch" | grep new`"
+	msg_from_awk="`echo "$msg_from_grep" | awk '{print $4}'`"
+	branches=($msg_from_awk)
+	echo "${branches}"
+	echo "${branches[0]}"
+	echo "${branches[1]}"
+	assertSame 'Should be ada but was ${branches[0]}' "${branches[0]}" 'ada'
+	assertSame 'Should be lisp but was ${branches[1]}' "${branches[1]}" 'lisp'
 }
 
 _testAssertNotSame()
