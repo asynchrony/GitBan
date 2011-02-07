@@ -44,7 +44,7 @@ EOF
  remote: Counting objects: 4006, done.
 remote: Compressing objects: 100% (1322/1322), done.
 remote: Total 2783 (delta 1526), reused 2587 (delta 1387)
-Receiving objects: 100% (2783/2783), 1.23 MiB | 10 KiB/s, done.
+Receiving objects: 100% (2783/2783), 1.23 Mi B | 10 KiB/s, done.
 Resolving deltas: 100% (1526/1526), completed with 387 local objects.
 From github.com:schacon/hw
    8e29b09..c7c5a10  master     -> github/master
@@ -67,13 +67,38 @@ test_FindNewBranches_WhenPassedFetchData_ReturnsNoNewBranches() {
 	branches=(`findNewBranches "$msg_from_fetch_without_new_branches"`)
 	assertSame "Should be null" "No.New.Branches" "${branches}"
 }
-test_NextStep_WhenPassedFetchData_ReturnsCRBranch() {
+test_findCodeReviewBranches_WhenPassedFetchData_ReturnsCRBranch() {
 	branches=(`findNewBranches "$msg_from_fetch_with_new_branches_marked"`)
-	#nextStep "${branches[@]}"
-	result=(`nextStep "${branches[@]}"`)
-	echo "$result"
+	findCodeReviewBranches "${branches[@]}"
+	result=(`findCodeReviewBranches "${branches[@]}"`)
 	assertSame "Should be lisp.cr" "lisp.cr" "${result[0]}"
 }
+
+
+test_findDesignReviewBranches_WhenPassedFetchData_ReturnsDRBranch() {
+	branches=(`findNewBranches "$msg_from_fetch_with_new_branches_marked"`)
+	findDesignReviewBranches "${branches[@]}"
+	result=(`findDesignReviewBranches findQABranches findCodeReviewBranches "${branches[@]}"`)
+	echo "$result"
+	assertSame "Should be 10344.dr" "10344.dr" "${result[0]}"
+}
+
+
+
+test_findQABranches_WhenPassedFetchData_ReturnsQABranch() {
+	branches=(`findNewBranches "$msg_from_fetch_with_new_branches_marked"`)
+	findQABranches "${branches[@]}"
+	result=(`findQABranches "${branches[@]}"`)
+	assertSame "Should be ada.qa" "ada.qa" "${result[0]}"
+}
+
+test_findBranchByExtension_delegates_to_function_by_branch_extension()
+{
+	branches=(`findNewBranches "$msg_from_fetch_with_new_branches_marked"`)
+	r=$(findBranchByExtension "dr" "${branches[@]}" )
+	assertSame "Should be $r" "dr() called with 10344.dr" "$r"
+}
+
 
 _testAssertNotSame()
 {
